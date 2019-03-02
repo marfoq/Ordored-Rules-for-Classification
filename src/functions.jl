@@ -34,6 +34,7 @@ function createFeatures(dataFolder::String, dataSet::String)
     end
 
     rawData = CSV.read(rawDataPath,  header=true)
+
     
     trainDataPath = dataFolder * dataSet * "_train.csv"
     testDataPath = dataFolder * dataSet * "_test.csv"
@@ -72,7 +73,9 @@ function createFeatures(dataFolder::String, dataSet::String)
 	     	features[Symbol("Pclass_2")] =  ifelse.( rawData[:Pclass] .== 2, 1, 0)
 	     	features[Symbol("Pclass_3")] =  ifelse.( rawData[:Pclass] .== 3, 1, 0)
 
-	     	# 
+	     	# Is_alone 
+	     	features[Symbol("Is_alone")] = ifelse.((rawData[Symbol("Siblings/Spouses Aboard")] 
+	     										  + rawData[Symbol("Parents/Children Aboard")]) .== 1, 1, 0)
 
         end
 
