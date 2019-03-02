@@ -67,8 +67,12 @@ function createFeatures(dataFolder::String, dataSet::String)
 	     	features[Symbol("FareBand_15_32")] =  ifelse.(14.454 .< rawData[:Fare] .<= 31.138, 1, 0)
 	     	features[Symbol("FareBand_32_512")] =  ifelse.(31.138 .< rawData[:Fare] .<= 512.329, 1, 0)
 
-	     	# 
+	     	# Pclass
+	     	features[Symbol("Pclass_1")] =  ifelse.( rawData[:Pclass] .== 1, 1, 0)
+	     	features[Symbol("Pclass_2")] =  ifelse.( rawData[:Pclass] .== 2, 1, 0)
+	     	features[Symbol("Pclass_3")] =  ifelse.( rawData[:Pclass] .== 3, 1, 0)
 
+	     	# 
 
         end
 
