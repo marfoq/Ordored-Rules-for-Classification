@@ -81,8 +81,7 @@ function createFeatures(dataFolder::String, dataSet::String)
                 features[Symbol("Rare")] =  ifelse.(rawData["new_title"] .== "Rare", 1, 0)
 
 	     	# Is_alone 
-	     	features[Symbol("Is_alone")] = ifelse.((rawData[Symbol("Siblings/Spouses Aboard")] 
-	     										  + rawData[Symbol("Parents/Children Aboard")]) .== 1, 1, 0)
+	     	features[Symbol("Is_alone")] = ifelse.(rawData["FamilySize"].== 1, 1, 0)
 
         end
 
