@@ -53,7 +53,7 @@ function createFeatures(dataFolder::String, dataSet::String)
             features[Symbol("Label")] = rawData[:Survived]
 
             # Sex
-            features[Symbol("Sex")] = ifelse.(rawData[:Sex] .== "female", 1, 0) 
+            features[Symbol("Sex")] = ifelse.(rawData[:Sex] .== 1, 1, 0) 
 
             # Age
 	     	features[Symbol("Age_0_16")] =  ifelse.(rawData[:Age] .<= 16, 1, 0)
