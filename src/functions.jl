@@ -6,7 +6,7 @@ epsilon = 0.0001
 # Attributes:
 # - header: column of table "data" that will be binarized
 # - intervals: array of values which delimits the binarization (ex : [2, 4, 6, 8] will lead to 3 columns respectively equal to 1 if the value of column "header" is in [2, 3], [4, 5] and [6, 7])
-#
+#  
 # Example:
 #  createColumns(:Age, [1, 17, 50, Inf], data, features) will create 3 binary columns in features named "Age1-16", "Age17-49", "Age50-Inf"
 function createColumns(header::Symbol, intervals, data::DataFrames.DataFrame, features::DataFrames.DataFrame)
@@ -63,15 +63,22 @@ function createFeatures(dataFolder::String, dataSet::String)
 	     	features[Symbol("Age_64_100")] =  ifelse.(rawData[:Age] .> 64, 1, 0)
 
 	     	# Fare
-	     	features[Symbol("FareBand_0_8")] =  ifelse.(-0.001 .< rawData[:Fare] .<= 7.925, 1, 0)
-	     	features[Symbol("FareBand_8_15")] =  ifelse.(7.925 .< rawData[:Fare] .<= 14.454, 1, 0)
-	     	features[Symbol("FareBand_15_32")] =  ifelse.(14.454 .< rawData[:Fare] .<= 31.138, 1, 0)
-	     	features[Symbol("FareBand_32_512")] =  ifelse.(31.138 .< rawData[:Fare] .<= 512.329, 1, 0)
+	     	features[Symbol("FareBand_0_8")] =  ifelse.(rawData[:nFareBand].==0, 1, 0)
+	     	features[Symbol("FareBand_8_10")] =  ifelse.(rawData[:nFareBand] .== 1, 1, 0)
+		features[Symbol("FareBand_10_15")] =  ifelse.(rawData[:nFareBand] .== 2, 1, 0)
+	        features[Symbol("FareBand_15_32")] =  ifelse.(rawData[:nFareBand] .== 3, 1, 0)
+	     	features[Symbol("FareBand_32_512")] =  ifelse.(rawData[:nFareBand] .== 4, 1, 0)
 
 	     	# Pclass
 	     	features[Symbol("Pclass_1")] =  ifelse.( rawData[:Pclass] .== 1, 1, 0)
 	     	features[Symbol("Pclass_2")] =  ifelse.( rawData[:Pclass] .== 2, 1, 0)
 	     	features[Symbol("Pclass_3")] =  ifelse.( rawData[:Pclass] .== 3, 1, 0)
+		
+		#Title 
+		features[Symbol("Mr")] =  ifelse.(rawData["new_title"] .== "Mr.", 1, 0) 
+		features[Symbol("Miss")] =  ifelse.(rawData["new_title"] .== "Miss.", 1, 0) 
+		features[Symbol("Mrs")] =  ifelse.(rawData["new_title"] .== "Mrs.", 1, 0)
+                features[Symbol("Rare")] =  ifelse.(rawData["new_title"] .== "Rare", 1, 0)
 
 	     	# Is_alone 
 	     	features[Symbol("Is_alone")] = ifelse.((rawData[Symbol("Siblings/Spouses Aboard")] 
