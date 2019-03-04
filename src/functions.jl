@@ -56,11 +56,11 @@ function createFeatures(dataFolder::String, dataSet::String)
             features[Symbol("Sex")] = ifelse.(rawData[:Sex] .== 1, 1, 0) 
 
             # Age
-	     	features[Symbol("Age_0_16")] =  ifelse.(rawData[:Age] .<= 16, 1, 0)
-	     	features[Symbol("Age_16_32")] =  ifelse.(16 .< rawData[:Age] .<= 32, 1, 0)
-	     	features[Symbol("Age_32_48")] =  ifelse.(32 .< rawData[:Age] .<= 48, 1, 0)
-	     	features[Symbol("Age_48_64")] =  ifelse.(48 .< rawData[:Age] .<= 64, 1, 0)
-	     	features[Symbol("Age_64_100")] =  ifelse.(rawData[:Age] .> 64, 1, 0)
+	     	features[Symbol("Age_0_16")] =  ifelse.(rawData[:age] .== 0, 1, 0)
+	     	features[Symbol("Age_16_32")] =  ifelse.(16 .< rawData[:age] .== 1, 1, 0)
+	     	features[Symbol("Age_32_48")] =  ifelse.(32 .< rawData[:age] .== 2, 1, 0)
+	     	features[Symbol("Age_48_64")] =  ifelse.(48 .< rawData[:age] .== 3, 1, 0)
+	     	features[Symbol("Age_64_100")] =  ifelse.(rawData[:age] .==4, 1, 0)
 
 	     	# Fare
 	     	features[Symbol("FareBand_0_8")] =  ifelse.(rawData[:nFareBand].==0, 1, 0)
