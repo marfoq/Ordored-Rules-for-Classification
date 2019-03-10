@@ -39,6 +39,10 @@ function createFeatures(dataFolder::String, dataSet::String)
     trainDataPath = dataFolder * dataSet * "_train.csv"
     testDataPath = dataFolder * dataSet * "_test.csv"
 
+    partA_DataPath = dataFolder * dataSet * "_partA.csv"
+    partB_DataPath = dataFolder * dataSet * "_partB.csv"
+    partC_DataPath = dataFolder * dataSet * "_partC.csv"
+
     # If the train or the test file do not exist
     if !isfile(trainDataPath) || !isfile(testDataPath)
 
@@ -186,6 +190,7 @@ function createFeatures(dataFolder::String, dataSet::String)
         # Shuffle the individuals
         features = features[shuffle(1:size(features, 1)),:] 
         trainLimit = round.(Int, size(features, 1) * 2/3)
+        Limit = round.(Int, size(features, 1) * 1/3)
 
         train = features[1:trainLimit, :]
         test = features[(trainLimit+1):end, :]
@@ -193,18 +198,36 @@ function createFeatures(dataFolder::String, dataSet::String)
         CSV.write(trainDataPath, train)
         CSV.write(testDataPath, test)
 
+        
+       	# Divide the data into tree equal size parts (A,B and C)
+       	features = features[shuffle(1:size(features, 1)),:] 
+        Part_A = features[1:Limit, :]
+        Part_B = features[(Limit+1):2*Limit, :]
+        Part_C = features[(2*Limit+1):end, :]
+
+        CSV.write(partA_DataPath, Part_A)
+        CSV.write(partB_DataPath, Part_B)
+        CSV.write(partC_DataPath, Part_C)
         # If the train and test file already exist
     else
         println("=== Loading the features")
         train = CSV.read(trainDataPath)
         test = CSV.read(testDataPath)
+        Part_A = CSV.read(partA_DataPath)
+        Part_B = CSV.read(partB_DataPath)
+        Part_C = CSV.read(partC_DataPath)
     end
     
     println("=== ... ", size(train, 1), " individuals in the train set")
     println("=== ... ", size(test, 1), " individuals in the test set")
     println("=== ... ", size(train, 2), " features")
+
+    println("=== ... ", size(Part_A, 1), " individuals in the Part_A")
+    println("=== ... ", size(Part_B, 1), " individuals in the Part_B")
+    println("=== ... ", size(Part_C, 1), " individuals in the Part_C")
+
     
-    return train, test
+    return train, test, Part_A, Part_B, Part_C
 end 
 
 
@@ -212,12 +235,12 @@ end
 #
 # - train: individuals of the training set (each line is an individual, each column a feature except the first which is the class)
 # - output: table of rules (each line is a rule, the first column corresponds to the rules class)
-function createRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame)
+function createRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame, forceCompute::Bool)
 
     rulesPath = resultsFolder * dataSet * "_rules.csv"
     rules = []
 
-    if !isfile(rulesPath)
+    if !isfile(rulesPath) || forceCompute
 
         println("=== Generating the rules")
         
@@ -233,7 +256,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
         # Number of transactions
         n = size(t, 1)
 
-        mincovy = 0.05
+        mincovy = 0.01
         iterlim = 5
         RgenX = 0.1 / n
         RgenB = 0.1 / (n * d)
@@ -309,11 +332,11 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
 end
 
 # Sort the rules and keep the 
-function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame, rules::DataFrames.DataFrame)
+function sortRules(dataSet::String, resultsFolder::String, train::DataFrames.DataFrame, rules::DataFrames.DataFrame,  forceCompute::Bool)
 
     orderedRulesPath = resultsFolder * dataSet * "_ordered_rules.csv"
 
-    if !isfile(orderedRulesPath)
+    if !isfile(orderedRulesPath) || forceCompute
 
         println("=== Sorting the rules")
         
