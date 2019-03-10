@@ -9,6 +9,9 @@ using MultiJuMP
 include("functions.jl")
 
 dataSet = "titanic"
+# dataSet = "b_cancer"
+# dataSet = "tic_tac_toe"
+
 dataFolder = "../data/"
 resultsFolder = "../res/"
 
