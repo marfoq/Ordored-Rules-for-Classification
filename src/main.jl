@@ -1,7 +1,10 @@
+Pkg.add("MultiJuMP")
+
 using CSV
 using JuMP
 using CPLEX
 using DataFrames
+using MultiJuMP
 
 include("functions.jl")
 

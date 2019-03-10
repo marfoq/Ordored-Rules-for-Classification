@@ -6,7 +6,7 @@ epsilon = 0.0001
 # Attributes:
 # - header: column of table "data" that will be binarized
 # - intervals: array of values which delimits the binarization (ex : [2, 4, 6, 8] will lead to 3 columns respectively equal to 1 if the value of column "header" is in [2, 3], [4, 5] and [6, 7])
-#  
+#
 # Example:
 #  createColumns(:Age, [1, 17, 50, Inf], data, features) will create 3 binary columns in features named "Age1-16", "Age17-49", "Age50-Inf"
 function createColumns(header::Symbol, intervals, data::DataFrames.DataFrame, features::DataFrames.DataFrame)
@@ -53,37 +53,135 @@ function createFeatures(dataFolder::String, dataSet::String)
             features[Symbol("Label")] = rawData[:Survived]
 
             # Sex
-            features[Symbol("Sex")] = ifelse.(rawData[:Sex] .== 1, 1, 0) 
-
-            # Age
-	     	features[Symbol("Age_0_16")] =  ifelse.(rawData[:age] .== 0, 1, 0)
-	     	features[Symbol("Age_16_32")] =  ifelse.(16 .< rawData[:age] .== 1, 1, 0)
-	     	features[Symbol("Age_32_48")] =  ifelse.(32 .< rawData[:age] .== 2, 1, 0)
-	     	features[Symbol("Age_48_64")] =  ifelse.(48 .< rawData[:age] .== 3, 1, 0)
-	     	features[Symbol("Age_64_100")] =  ifelse.(rawData[:age] .==4, 1, 0)
-
-	     	# Fare
-	     	features[Symbol("FareBand_0_8")] =  ifelse.(rawData[:nFareBand].==0, 1, 0)
-	     	features[Symbol("FareBand_8_10")] =  ifelse.(rawData[:nFareBand] .== 1, 1, 0)
-		features[Symbol("FareBand_10_15")] =  ifelse.(rawData[:nFareBand] .== 2, 1, 0)
-	        features[Symbol("FareBand_15_32")] =  ifelse.(rawData[:nFareBand] .== 3, 1, 0)
-	     	features[Symbol("FareBand_32_512")] =  ifelse.(rawData[:nFareBand] .== 4, 1, 0)
+            features[Symbol("Sex")] = ifelse.(rawData[:Sex] .== "female", 1, 0) 
 
 	     	# Pclass
 	     	features[Symbol("Pclass_1")] =  ifelse.( rawData[:Pclass] .== 1, 1, 0)
 	     	features[Symbol("Pclass_2")] =  ifelse.( rawData[:Pclass] .== 2, 1, 0)
 	     	features[Symbol("Pclass_3")] =  ifelse.( rawData[:Pclass] .== 3, 1, 0)
-		
-		#Title 
-		features[Symbol("Mr")] =  ifelse.(rawData["new_title"] .== "Mr.", 1, 0) 
-		features[Symbol("Miss")] =  ifelse.(rawData["new_title"] .== "Miss.", 1, 0) 
-		features[Symbol("Mrs")] =  ifelse.(rawData["new_title"] .== "Mrs.", 1, 0)
-                features[Symbol("Rare")] =  ifelse.(rawData["new_title"] .== "Rare", 1, 0)
 
-	     	# Is_alone 
-	     	features[Symbol("Is_alone")] = ifelse.(rawData["FamilySize"].== 1, 1, 0)
+
+            # Age
+	     	features[Symbol("Age_0_5")] =  ifelse.(rawData[:Age] .<= 5, 1, 0)
+	     	features[Symbol("Age_5_10")] =  ifelse.(5 .< rawData[:Age] .<= 10, 1, 0)
+	     	features[Symbol("Age_10_20")] =  ifelse.(10 .< rawData[:Age] .<= 20, 1, 0)
+	     	features[Symbol("Age_20_30")] =  ifelse.(20 .< rawData[:Age] .<= 30, 1, 0)
+	     	features[Symbol("Age_30_40")] =  ifelse.(30 .< rawData[:Age] .<= 40, 1, 0)
+	     	features[Symbol("Age_40_50")] =  ifelse.(40 .< rawData[:Age] .<= 50, 1, 0)
+	     	features[Symbol("Age_50_60")] =  ifelse.(50 .< rawData[:Age] .<= 60, 1, 0)
+	     	features[Symbol("Age_60_70")] =  ifelse.(60 .< rawData[:Age] .<= 70, 1, 0)
+	     	features[Symbol("Age_70_80")] =  ifelse.(70 .< rawData[:Age] .<= 80, 1, 0)
+	     	features[Symbol("Age_80_100")] =  ifelse.(rawData[:Age] .> 80, 1, 0)
+
+	     	# Siblings/Spouses
+	     	features[Symbol("SibSp_0")] = ifelse.(rawData[Symbol("Siblings/Spouses Aboard")] .== 0, 1, 0)
+	     	features[Symbol("SibSp_1")] = ifelse.(rawData[Symbol("Siblings/Spouses Aboard")] .== 1, 1, 0)
+	     	features[Symbol("SibSp_2_10")] = ifelse.(rawData[Symbol("Siblings/Spouses Aboard")] .>= 2, 1, 0)
+
+	     	# Parents/Children
+	     	features[Symbol("ParCh_0")] = ifelse.(rawData[Symbol("Parents/Children Aboard")] .== 0, 1, 0)
+	     	features[Symbol("ParCh_1_3")] = ifelse.(1 .<= rawData[Symbol("Parents/Children Aboard")] .<= 3, 1, 0)
+	     	features[Symbol("ParCh_4_10")] = ifelse.(rawData[Symbol("Parents/Children Aboard")] .>= 4, 1, 0)
+
+	     	# Fare
+	     	features[Symbol("FareBand_0_8")] =  ifelse.(-0.001 .< rawData[:Fare] .<= 7.925, 1, 0)
+	     	features[Symbol("FareBand_8_15")] =  ifelse.(7.925 .< rawData[:Fare] .<= 14.454, 1, 0)
+	     	features[Symbol("FareBand_15_32")] =  ifelse.(14.454 .< rawData[:Fare] .<= 31.138, 1, 0)
+	     	features[Symbol("FareBand_32_512")] =  ifelse.(31.138 .< rawData[:Fare] .<= 512.329, 1, 0)
+
 
         end
+
+       if dataSet == "b_cancer"
+		
+            features[Symbol("Label")] = ifelse.(rawData[:diagnosis] .== "B", 1, 0)
+
+            # area_mean
+	     	features[Symbol("area_mean_1")] =  ifelse.(143.499 .<= rawData[:area_mean] .<= 420.3, 1, 0)
+	     	features[Symbol("area_mean_2")] =  ifelse.(420.3 .< rawData[:area_mean] .<= 551.1, 1, 0)
+	     	features[Symbol("area_mean_3")] =  ifelse.(551.1 .< rawData[:area_mean] .<= 782.7, 1, 0)
+	     	features[Symbol("area_mean_4")] =  ifelse.(782.7 .< rawData[:area_mean] .<= 2501.0, 1, 0)
+
+            # area_se
+	     	features[Symbol("area_se_1")] =  ifelse.(6.8 .<= rawData[:area_se] .<= 17.85, 1, 0)
+	     	features[Symbol("area_se_2")] =  ifelse.(17.85 .< rawData[:area_se] .<= 24.53, 1, 0)
+	     	features[Symbol("area_se_3")] =  ifelse.(24.53 .< rawData[:area_se] .<= 45.19, 1, 0)
+	     	features[Symbol("area_se_4")] =  ifelse.(45.19 .< rawData[:area_se] .<= 542.2, 1, 0)
+        
+            # texture_mean
+	     	features[Symbol("texture_mean_1")] =  ifelse.(9.7 .<= rawData[:texture_mean] .<= 16.17, 1, 0)
+	     	features[Symbol("texture_mean_2")] =  ifelse.(16.17 .< rawData[:texture_mean] .<= 18.84, 1, 0)
+	     	features[Symbol("texture_mean_3")] =  ifelse.(18.84 .< rawData[:texture_mean] .<= 21.8, 1, 0)
+	     	features[Symbol("texture_mean_4")] =  ifelse.(21.8 .< rawData[:texture_mean] .<= 39.28, 1, 0)
+
+            # concavity_worst
+	     	features[Symbol("concavity_worst_1")] =  ifelse.(-0.001 .<= rawData[:concavity_worst] .<= 0.114, 1, 0)
+	     	features[Symbol("concavity_worst_2")] =  ifelse.(0.114 .< rawData[:concavity_worst] .<= 0.227, 1, 0)
+	     	features[Symbol("concavity_worst_3")] =  ifelse.(0.227 .< rawData[:concavity_worst] .<= 0.383, 1, 0)
+	     	features[Symbol("concavity_worst_4")] =  ifelse.(0.383 .< rawData[:concavity_worst] .<= 1.252, 1, 0)
+
+            # concavity_mean
+	     	features[Symbol("concavity_mean_1")] =  ifelse.(-0.001 .<= rawData[:concavity_mean] .<= 0.0296, 1, 0)
+	     	features[Symbol("concavity_mean_2")] =  ifelse.(0.0296 .< rawData[:concavity_mean] .<= 0.0615, 1, 0)
+	     	features[Symbol("concavity_mean_3")] =  ifelse.(0.0615 .< rawData[:concavity_mean] .<= 0.131, 1, 0)
+	     	features[Symbol("concavity_mean_4")] =  ifelse.(0.131 .< rawData[:concavity_mean] .<= 0.427, 1, 0)
+
+
+        end
+
+
+       if dataSet == "tic_tac_toe"
+		
+            features[Symbol("Label")] = ifelse.(rawData[:class] .== "True", 1, 0)
+
+
+            # TL
+	     	features[Symbol("TL_x")] =  ifelse.(rawData[:TL] .== "x", 1, 0)
+	     	features[Symbol("TL_o")] =  ifelse.(rawData[:TL] .== "o", 1, 0)
+	     	features[Symbol("TL_b")] =  ifelse.(rawData[:TL] .== "b", 1, 0)
+
+            # TM
+	     	features[Symbol("TM_x")] =  ifelse.(rawData[:TM] .== "x", 1, 0)
+	     	features[Symbol("TM_o")] =  ifelse.(rawData[:TM] .== "o", 1, 0)
+	     	features[Symbol("TM_b")] =  ifelse.(rawData[:TM] .== "b", 1, 0)
+
+            # TR
+	     	features[Symbol("TR_x")] =  ifelse.(rawData[:TR] .== "x", 1, 0)
+	     	features[Symbol("TR_o")] =  ifelse.(rawData[:TR] .== "o", 1, 0)
+	     	features[Symbol("TR_b")] =  ifelse.(rawData[:TR] .== "b", 1, 0)
+
+            # ML
+	     	features[Symbol("ML_x")] =  ifelse.(rawData[:ML] .== "x", 1, 0)
+	     	features[Symbol("ML_o")] =  ifelse.(rawData[:ML] .== "o", 1, 0)
+	     	features[Symbol("ML_b")] =  ifelse.(rawData[:ML] .== "b", 1, 0)
+
+            # MM
+	     	features[Symbol("MM_x")] =  ifelse.(rawData[:MM] .== "x", 1, 0)
+	     	features[Symbol("MM_o")] =  ifelse.(rawData[:MM] .== "o", 1, 0)
+	     	features[Symbol("MM_b")] =  ifelse.(rawData[:MM] .== "b", 1, 0)
+
+            # MR
+	     	features[Symbol("MR_x")] =  ifelse.(rawData[:MR] .== "x", 1, 0)
+	     	features[Symbol("MR_o")] =  ifelse.(rawData[:MR] .== "o", 1, 0)
+	     	features[Symbol("MR_b")] =  ifelse.(rawData[:MR] .== "b", 1, 0)
+
+            # BL
+	     	features[Symbol("BL_x")] =  ifelse.(rawData[:BL] .== "x", 1, 0)
+	     	features[Symbol("BL_o")] =  ifelse.(rawData[:BL] .== "o", 1, 0)
+	     	features[Symbol("BL_b")] =  ifelse.(rawData[:BL] .== "b", 1, 0)
+
+            # BM
+	     	features[Symbol("BM_x")] =  ifelse.(rawData[:BM] .== "x", 1, 0)
+	     	features[Symbol("BM_o")] =  ifelse.(rawData[:BM] .== "o", 1, 0)
+	     	features[Symbol("BM_b")] =  ifelse.(rawData[:BM] .== "b", 1, 0)
+
+            # BR
+	     	features[Symbol("BR_x")] =  ifelse.(rawData[:BR] .== "x", 1, 0)
+	     	features[Symbol("BR_o")] =  ifelse.(rawData[:BR] .== "o", 1, 0)
+	     	features[Symbol("BR_b")] =  ifelse.(rawData[:BR] .== "b", 1, 0)
+
+        end
+
 
         # Shuffle the individuals
         features = features[shuffle(1:size(features, 1)),:] 
@@ -135,7 +233,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
         # Number of transactions
         n = size(t, 1)
 
-        mincovy = 0.01
+        mincovy = 0.05
         iterlim = 5
         RgenX = 0.1 / n
         RgenB = 0.1 / (n * d)
@@ -196,7 +294,7 @@ function createRules(dataSet::String, resultsFolder::String, train::DataFrames.D
 
 	    		end
          	end 
-        end
+        end        
         
         CSV.write(rulesPath, rules)
 
